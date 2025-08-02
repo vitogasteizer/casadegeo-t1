@@ -18,11 +18,11 @@ export function AboutSection() {
             სრულად
           </Link>
         </div>
-        <div className="order-1 lg:order-2">
+        <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
           <img
             src={siteData.aboutImage || "/placeholder.svg"}
             alt="ასოციაციის ფოტო"
-            className="rounded-lg shadow-xl w-full h-auto"
+            className="rounded-lg shadow-xl w-[50%] h-full object-cover object-center"
           />
         </div>
       </div>
