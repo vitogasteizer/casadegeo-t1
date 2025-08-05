@@ -147,7 +147,7 @@ export function BlogPosts() {
             variant="outline"
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 sm:px-4 py-2 text-sm sm:text-base"
+            className="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full"
           >
             <ChevronLeft className="w-4 h-4 mr-1" />
             <span className="hidden sm:inline">წინა</span>
@@ -159,7 +159,7 @@ export function BlogPosts() {
                 key={page}
                 variant={currentPage === page ? "default" : "outline"}
                 onClick={() => setCurrentPage(page)}
-                className="w-8 h-8 sm:w-10 sm:h-10 text-sm sm:text-base"
+                className="w-8 h-8 sm:w-10 sm:h-10 text-sm sm:text-base rounded-full"
               >
                 {page}
               </Button>
@@ -170,7 +170,7 @@ export function BlogPosts() {
             variant="outline"
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-3 sm:px-4 py-2 text-sm sm:text-base"
+            className="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full"
           >
             <span className="hidden sm:inline">შემდეგი</span>
             <ChevronRight className="w-4 h-4 ml-1" />
@@ -180,7 +180,7 @@ export function BlogPosts() {
 
       {/* Blog post modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[95vw] max-w-none sm:w-[90vw] md:w-[80vw] lg:w-[60vw] xl:w-[50vw] max-h-[90vh] overflow-y-auto p-0">
+        <DialogContent className="w-[95vw] max-w-[1400px] sm:w-[90vw] md:w-[80vw] lg:w-[70vw] xl:w-[70vw] 2xl:w-[60vw] max-h-[90vh] overflow-y-auto p-0">
           {selectedPost && (
             <>
               {/* Full-width cover image */}
