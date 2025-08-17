@@ -14,7 +14,7 @@ export function ChurchSection() {
       </div>
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          <div className="lg:col-span-2 bg-white p-4 sm:p-6 rounded-lg shadow-xl">
+          <div className="lg:col-span-2 bg-white p-4 sm:p-6 shadow-xl rounded-md">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 items-center">
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">მიმდინარე თვის დღესასწაულები</h3>
@@ -29,7 +29,7 @@ export function ChurchSection() {
                   ))}
                 </ul>
               </div>
-              <div className="p-4 bg-gray-100 rounded-lg shadow-inner text-center">
+              <div className="p-4 bg-gray-100 shadow-inner text-center rounded-md">
                 <h3 className="text-xl font-semibold text-gray-700 mb-4">საკონტაქტო ინფორმაცია</h3>
                 <p className="text-lg text-gray-700 mb-4">სულიერი რჩევისთვის, გთხოვთ, დაუკავშირდეთ მოძღვარს.</p>
                 <button className="inline-flex items-center bg-orange-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-orange-700 transition duration-300">
@@ -39,7 +39,7 @@ export function ChurchSection() {
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-xl">
+          <div className="bg-white p-6 shadow-xl rounded-md">
             <h3 className="text-2xl font-bold text-gray-800 mb-4">საეკლესიო განრიგი</h3>
             <div className="space-y-4">
               <div>

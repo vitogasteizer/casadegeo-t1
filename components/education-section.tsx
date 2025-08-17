@@ -184,7 +184,7 @@ export function EducationSection() {
   return (
     <section id="education" className="container mx-auto px-4 py-16">
       <h2 className="text-3xl font-bold text-center mb-8">საგანმანათლებლო პროგრამები</h2>
-      <div className="bg-white p-6 rounded-lg shadow-xl">
+      <div className="bg-white p-6 shadow-xl rounded-md">
         <Tabs defaultValue="school" className="w-full">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1">
             <TabsTrigger value="school">საკვირაო სკოლა</TabsTrigger>
@@ -208,7 +208,7 @@ export function EducationSection() {
                   <li>გასაუბრება მოძღვართან.</li>
                 </ul>
               </div>
-              <div>
+              <div className="rounded-md">
                 <img
                   src="/placeholder.svg?height=400&width=600&text=საკვირაო+სკოლა"
                   alt="საკვირაო სკოლის ფოტო"
@@ -220,7 +220,7 @@ export function EducationSection() {
 
           <TabsContent value="dance" className="mt-6">
             <div className="space-y-8">
-              <div className="relative w-full aspect-video rounded-xl shadow-md overflow-hidden">
+              <div className="relative w-full aspect-video shadow-md overflow-hidden rounded-md">
                 <iframe
                   className="w-full h-full"
                   src="https://www.youtube.com/embed/dQw4w9WgXcQ"
@@ -230,7 +230,7 @@ export function EducationSection() {
                   allowFullScreen
                 />
               </div>
-              <div className="p-4 bg-gray-100 rounded-lg shadow-inner">
+              <div className="p-4 bg-gray-100 shadow-inner rounded-md">
                 <h4 className="text-xl font-bold mb-2">მიღების პროცედურა:</h4>
                 <p className="text-gray-700 mb-2">
                   ჩვენს ცეკვის სტუდიაში მიღება ხორციელდება გასაუბრებისა და საცდელი გაკვეთილის საფუძველზე.
@@ -247,7 +247,7 @@ export function EducationSection() {
           <TabsContent value="teachers" className="mt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {teachers.map((teacher, index) => (
-                <div key={index} className="flex flex-col items-center p-6 bg-gray-50 rounded-xl shadow-md">
+                <div key={index} className="flex flex-col items-center p-6 bg-gray-50 shadow-md rounded-md">
                   <img
                     src={teacher.photo || "/placeholder.svg"}
                     alt={teacher.name}
@@ -255,7 +255,7 @@ export function EducationSection() {
                   />
                   <h3 className="text-lg font-bold text-gray-800 text-center">{teacher.name}</h3>
                   <p className="text-sm font-semibold text-orange-600 mb-2 text-center">{teacher.role}</p>
-                  <p className="text-center text-gray-600 text-xs">{teacher.description}</p>
+                  <p className="text-gray-600 text-xs text-center py-0 my-2.5">{teacher.description}</p>
                 </div>
               ))}
             </div>
@@ -269,7 +269,7 @@ export function EducationSection() {
                   {learningResources.map((resource, index) => (
                     <li
                       key={index}
-                      className="p-4 bg-gray-50 rounded-lg shadow-sm hover:bg-gray-100 transition duration-300"
+                      className="p-4 bg-gray-50 shadow-sm hover:bg-gray-100 transition duration-300 rounded-md"
                     >
                       <a
                         href={resource.link}
@@ -337,7 +337,7 @@ export function EducationSection() {
             </div>
             <ul className="space-y-4">
               {filteredBooks.slice(0, visibleBooksCount).map((book, index) => (
-                <li key={index} className="bg-gray-50 p-4 rounded-lg shadow-sm flex items-start space-x-4">
+                <li key={index} className="bg-gray-50 p-4 shadow-sm flex items-start space-x-4 rounded-md">
                   <img src={book.cover || "/placeholder.svg"} alt={book.title} className="w-24 rounded-md shadow-md" />
                   <div>
                     <h4 className="font-semibold text-lg">{book.title}</h4>

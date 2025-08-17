@@ -13,10 +13,10 @@ export function BlogHeader() {
       </div>
       <div className="relative z-10 text-white p-4 max-w-4xl mx-auto">
         <h1 className="text-2xl sm:text-4xl lg:text-6xl font-extrabold leading-tight tracking-wide">
-          ასოციაცია ქართული სახლი ვიტორია გასტეიზში
+          ბოლო სიახლეები
         </h1>
         <nav className="mt-8 sm:mt-12 lg:mt-16">
-          <ul className="flex flex-wrap justify-center gap-4 sm:gap-6 text-lg sm:text-xl font-semibold">
+          <ul className="flex flex-wrap justify-center gap-4 sm:gap-6 text-lg sm:text-xl font-semibold flex-row mt-80 pt-0">
             <li>
               <Link href="/" className="hover:text-orange-300 transition-colors duration-300">
                 საწყისი

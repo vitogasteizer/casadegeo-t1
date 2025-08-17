@@ -18,7 +18,7 @@ export function BlogSection() {
           {latestPosts.map((post) => (
             <div
               key={post.id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-xl transition-all duration-300"
+              className="bg-white shadow-lg overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-xl transition-all duration-300 rounded-md"
             >
               <img src={post.image || "/placeholder.svg"} alt={post.title} className="w-full h-48 object-cover" />
               <div className="p-4 sm:p-6 flex-grow flex flex-col justify-between">

@@ -16,7 +16,7 @@ export function AboutHeader() {
           ასოციაციის შესახებ
         </h1>
         <nav className="mt-8 sm:mt-12 lg:mt-16">
-          <ul className="flex flex-wrap justify-center gap-4 sm:gap-6 text-lg sm:text-xl font-semibold">
+          <ul className="flex flex-wrap justify-center gap-4 sm:gap-6 text-lg sm:text-xl font-semibold mb-0 pt-0 mt-80">
             <li>
               <Link href="/" className="hover:text-orange-300 transition-colors duration-300">
                 საწყისი

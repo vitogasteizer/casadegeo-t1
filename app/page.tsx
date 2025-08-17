@@ -11,7 +11,7 @@ import { Footer } from "@/components/footer"
 
 export default function HomePage() {
   return (
-    <div className="relative">
+    <div className="relative pb-0 my-0">
       <Header />
       <LanguageSwitcher />
       <InfoCards />

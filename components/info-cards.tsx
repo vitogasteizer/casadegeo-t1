@@ -9,7 +9,7 @@ export function InfoCards() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-8">
         <Link
           href="#about"
-          className="block bg-white rounded-lg shadow-xl p-4 sm:p-6 text-center hover:shadow-2xl transition-all duration-300"
+          className="block bg-white shadow-xl p-4 sm:p-6 text-center hover:shadow-2xl transition-all duration-300 rounded-md"
         >
           <div className="text-orange-600 text-3xl mb-4 flex justify-center">
             <Home />

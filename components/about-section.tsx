@@ -7,7 +7,7 @@ export function AboutSection() {
   const { siteData } = useSiteData()
 
   return (
-    <section id="about" className="py-16 bg-gray-50">
+    <section id="about" className="py-16 bg-gray-50 mt-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div className="order-2 lg:order-1">
@@ -21,7 +21,7 @@ export function AboutSection() {
             </Link>
           </div>
           <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
-            <div className="w-3/4 lg:w-full max-w-md lg:max-w-lg">
+            <div className="w-3/4 lg:w-full max-w-md lg:max-w-lg rounded-md">
               <img
                 src={siteData.aboutImage || "/placeholder.svg"}
                 alt="ასოციაციის ფოტო"
