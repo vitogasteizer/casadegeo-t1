@@ -56,23 +56,15 @@ interface SiteData {
   categories: string[]
 
   // Books
-  books: Array<{
-    id: number
+  books?: Array<{
     title: string
     author: string
     description: string
-    image: string
-    year: string
-    genre: string
+    cover: string
   }>
 
   // Gallery Images
-  galleryImages: Array<{
-    id: number
-    url: string
-    caption: string
-    category: string
-  }>
+  galleryImages?: string[]
 }
 
 interface BlogPost {
@@ -277,40 +269,8 @@ const defaultSiteData: SiteData = {
     },
   ],
   categories: ["events", "news", "education", "culture"],
-  books: [
-    {
-      id: 1,
-      title: "ვეფხისტყაოსანი",
-      author: "შოთა რუსთაველი",
-      description: "ქართული ლიტერატურის უდიდესი ძეგლი",
-      image: "/placeholder.svg?height=200&width=150&text=ვეფხისტყაოსანი",
-      year: "XII საუკუნე",
-      genre: "ეპოსი",
-    },
-    {
-      id: 2,
-      title: "მამის მკვლელი",
-      author: "ალექსანდრე ყაზბეგი",
-      description: "ქართული რეალისტური ლიტერატურის შედევრი",
-      image: "/placeholder.svg?height=200&width=150&text=მამის+მკვლელი",
-      year: "1882",
-      genre: "რომანი",
-    },
-  ],
-  galleryImages: [
-    {
-      id: 1,
-      url: "/placeholder.svg?height=300&width=400&text=გალერეა+1",
-      caption: "ახალი წლის ღონისძიება",
-      category: "events",
-    },
-    {
-      id: 2,
-      url: "/placeholder.svg?height=300&width=400&text=გალერეა+2",
-      caption: "ქართული ენის კურსები",
-      category: "education",
-    },
-  ],
+  books: [],
+  galleryImages: [],
 }
 
 interface SiteContextType {
@@ -329,7 +289,7 @@ export function SiteProvider({ children }: { children: React.ReactNode }) {
   const [siteData, setSiteData] = useState<SiteData>(defaultSiteData)
 
   useEffect(() => {
-    const savedData = localStorage.getItem("siteData")
+    const savedData = localStorage.getItem("georgianHouseSiteData")
     if (savedData) {
       try {
         const parsedData = JSON.parse(savedData)
@@ -340,10 +300,15 @@ export function SiteProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  const updateSiteData = (data: Partial<SiteData>) => {
-    const newData = { ...siteData, ...data }
-    setSiteData(newData)
-    localStorage.setItem("siteData", JSON.stringify(newData))
+  useEffect(() => {
+    localStorage.setItem("georgianHouseSiteData", JSON.stringify(siteData))
+  }, [siteData])
+
+  const updateSiteData = (section: keyof SiteData, data: any) => {
+    setSiteData((prev) => ({
+      ...prev,
+      [section]: data,
+    }))
   }
 
   const addBlogPost = (post: Omit<BlogPost, "id">) => {

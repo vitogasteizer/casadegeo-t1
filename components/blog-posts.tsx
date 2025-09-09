@@ -1,273 +1,300 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { useSearchParams } from "next/navigation"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useState, useEffect } from "react"
 import { useSiteData } from "@/contexts/site-context"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
+import { useSearchParams } from "next/navigation"
 
 export function BlogPosts() {
   const { siteData } = useSiteData()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [selectedPost, setSelectedPost] = useState<any>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [hasProcessedUrlParam, setHasProcessedUrlParam] = useState(false)
   const searchParams = useSearchParams()
+  const postId = searchParams.get("postId")
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [selectedPost, setSelectedPost] = useState<any>(null)
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
 
   const postsPerPage = 6
 
-  const filteredPosts =
-    selectedCategory === "all"
-      ? siteData.blogPosts
-      : siteData.blogPosts.filter((post) => post.category === selectedCategory)
+  useEffect(() => {
+    if (postId) {
+      const post = siteData.blogPosts.find((p) => p.id === Number.parseInt(postId))
+      if (post) {
+        setSelectedPost(post)
+      }
+    }
+  }, [postId, siteData.blogPosts])
+
+  const filteredPosts = siteData.blogPosts.filter((post) =>
+    selectedCategory === "all" ? true : post.category === selectedCategory,
+  )
 
   const totalPages = Math.ceil(filteredPosts.length / postsPerPage)
   const startIndex = (currentPage - 1) * postsPerPage
   const currentPosts = filteredPosts.slice(startIndex, startIndex + postsPerPage)
 
-  useEffect(() => {
-    if (!hasProcessedUrlParam) {
-      const postId = searchParams.get("postId")
-      if (postId) {
-        const post = siteData.blogPosts.find((p) => p.id === Number.parseInt(postId))
-        if (post) {
-          setSelectedPost(post)
-          setIsModalOpen(true)
-          setHasProcessedUrlParam(true)
-        }
-      }
-    }
-  }, [searchParams, hasProcessedUrlParam, siteData.blogPosts])
-
-  const openModal = useCallback((post: any) => {
-    setSelectedPost(post)
-    setIsModalOpen(true)
-  }, [])
-
-  const closeModal = useCallback(() => {
-    setIsModalOpen(false)
-    setSelectedPost(null)
-    setHasProcessedUrlParam(false)
-  }, [])
-
-  const openImageModal = useCallback((imageSrc: string, index: number) => {
+  const openImageModal = (imageSrc: string, index: number, images: string[]) => {
     setSelectedImage(imageSrc)
     setCurrentImageIndex(index)
     setIsImageModalOpen(true)
-  }, [])
+  }
 
-  const closeImageModal = useCallback(() => {
+  const closeImageModal = () => {
     setIsImageModalOpen(false)
     setSelectedImage(null)
-  }, [])
+  }
 
-  const nextImage = useCallback(() => {
-    if (selectedPost?.gallery) {
-      const nextIndex = (currentImageIndex + 1) % selectedPost.gallery.length
-      setCurrentImageIndex(nextIndex)
-      setSelectedImage(selectedPost.gallery[nextIndex])
-    }
-  }, [selectedPost, currentImageIndex])
+  const nextImage = (images: string[]) => {
+    const nextIndex = (currentImageIndex + 1) % images.length
+    setCurrentImageIndex(nextIndex)
+    setSelectedImage(images[nextIndex])
+  }
 
-  const prevImage = useCallback(() => {
-    if (selectedPost?.gallery) {
-      const prevIndex = (currentImageIndex - 1 + selectedPost.gallery.length) % selectedPost.gallery.length
-      setCurrentImageIndex(prevIndex)
-      setSelectedImage(selectedPost.gallery[prevIndex])
-    }
-  }, [selectedPost, currentImageIndex])
+  const prevImage = (images: string[]) => {
+    const prevIndex = (currentImageIndex - 1 + images.length) % images.length
+    setCurrentImageIndex(prevIndex)
+    setSelectedImage(images[prevIndex])
+  }
 
-  return (
-    <section className="container mx-auto px-4 py-16">
-      <h2 className="text-3xl font-bold text-center mb-8">ყველა სიახლე</h2>
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category)
+    setCurrentPage(1)
+  }
 
-      {/* Category filters */}
-      <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8">
-        <Button
-          variant={selectedCategory === "all" ? "default" : "outline"}
-          onClick={() => {
-            setSelectedCategory("all")
-            setCurrentPage(1)
-          }}
-          className="rounded-full"
-        >
-          ყველა
-        </Button>
-        {siteData.categories.map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
-            onClick={() => {
-              setSelectedCategory(category)
-              setCurrentPage(1)
-            }}
-            className="rounded-full"
-          >
-            {category}
-          </Button>
-        ))}
-      </div>
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
-      {/* Blog posts grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {currentPosts.map((post) => (
-          <div
-            key={post.id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-xl transition-all duration-300"
-          >
-            <img src={post.image || "/placeholder.svg"} alt={post.title} className="w-full h-48 object-cover" />
-            <div className="p-6 flex-grow flex flex-col justify-between">
-              <div>
-                <p className="text-xs text-orange-500 mb-2">{post.date}</p>
-                <h3 className="font-bold text-xl text-gray-800 mb-4 cursor-pointer" onClick={() => openModal(post)}>
-                  {post.title}
-                </h3>
-                <p className="text-base text-gray-600 mb-4 line-clamp-3">{post.text}</p>
+  if (selectedPost) {
+    const allImages = selectedPost.gallery ? [selectedPost.image, ...selectedPost.gallery] : [selectedPost.image]
+
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <Button
+              onClick={() => setSelectedPost(null)}
+              variant="outline"
+              className="mb-6 hover:bg-gray-100"
+              size="sm"
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              უკან დაბრუნება
+            </Button>
+
+            <article className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="relative">
+                <img
+                  src={selectedPost.image || "/placeholder.svg"}
+                  alt={selectedPost.title}
+                  className="w-full h-64 sm:h-80 md:h-96 object-cover cursor-pointer"
+                  onClick={() => openImageModal(selectedPost.image, 0, allImages)}
+                />
+                <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full cursor-pointer hover:bg-opacity-70 transition-all">
+                  <ZoomIn className="w-5 h-5" />
+                </div>
               </div>
+
+              <div className="p-6 sm:p-8">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                  <Badge variant="secondary" className="mb-2 sm:mb-0 w-fit">
+                    {selectedPost.category}
+                  </Badge>
+                  <span className="text-sm text-gray-500">{selectedPost.date}</span>
+                </div>
+
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                  {selectedPost.title}
+                </h1>
+
+                <div
+                  className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: selectedPost.text }}
+                />
+
+                {selectedPost.gallery && selectedPost.gallery.length > 0 && (
+                  <div className="mt-8">
+                    <h3 className="text-xl font-semibold mb-4">გალერეა</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {selectedPost.gallery.map((image: string, index: number) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={image || "/placeholder.svg"}
+                            alt={`Gallery image ${index + 1}`}
+                            className="w-full h-32 sm:h-40 object-cover rounded-lg cursor-pointer transition-transform group-hover:scale-105"
+                            onClick={() => openImageModal(image, index + 1, allImages)}
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-lg flex items-center justify-center">
+                            <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-all" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </article>
+          </div>
+        </div>
+
+        {/* Image Modal */}
+        {isImageModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50 p-4">
+            <div className="relative max-w-7xl max-h-full w-full h-full flex items-center justify-center">
               <button
-                onClick={() => openModal(post)}
-                className="inline-flex items-center text-orange-500 font-semibold text-sm hover:underline transition duration-300 self-start"
+                onClick={closeImageModal}
+                className="absolute top-4 right-4 text-white text-3xl hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center"
               >
-                ვრცლად <ChevronRight className="w-4 h-4 ml-2" />
+                <X className="w-6 h-6" />
               </button>
+
+              {allImages.length > 1 && (
+                <>
+                  <button
+                    onClick={() => prevImage(allImages)}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-3xl hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={() => nextImage(allImages)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white text-3xl hover:text-gray-300 z-10 bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </>
+              )}
+
+              <img
+                src={selectedImage || "/placeholder.svg"}
+                alt="Enlarged image"
+                className="max-w-full max-h-full object-contain"
+              />
+
+              {allImages.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm bg-black bg-opacity-50 px-3 py-1 rounded-full">
+                  {currentImageIndex + 1} / {allImages.length}
+                </div>
+              )}
             </div>
           </div>
-        ))}
+        )}
       </div>
+    )
+  }
 
-      {/* Main Blog Pagination */}
-      {totalPages > 1 && (
-        <div className="flex flex-wrap justify-center items-center gap-2 mt-12">
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        {/* Category Filter */}
+        <div className="flex flex-wrap gap-2 mb-8 justify-center">
           <Button
-            variant="outline"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full"
+            onClick={() => handleCategoryChange("all")}
+            variant={selectedCategory === "all" ? "default" : "outline"}
+            size="sm"
+            className="rounded-full"
           >
-            <ChevronLeft className="w-4 h-4 mr-1" />
-            <span className="hidden sm:inline">წინა</span>
+            ყველა
           </Button>
+          {siteData.categories.map((category) => (
+            <Button
+              key={category}
+              onClick={() => handleCategoryChange(category)}
+              variant={selectedCategory === category ? "default" : "outline"}
+              size="sm"
+              className="rounded-full"
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
 
-          <div className="flex flex-wrap gap-1 sm:gap-2">
+        {/* Blog Posts Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
+          {currentPosts.map((post) => (
+            <article
+              key={post.id}
+              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"
+              onClick={() => setSelectedPost(post)}
+            >
+              <div className="relative overflow-hidden">
+                <img
+                  src={post.image || "/placeholder.svg"}
+                  alt={post.title}
+                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute top-4 left-4">
+                  <Badge variant="secondary" className="bg-white/90 text-gray-800">
+                    {post.category}
+                  </Badge>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm text-gray-500">{post.date}</span>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors line-clamp-2">
+                  {post.title}
+                </h2>
+                <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">{post.text}</p>
+                <div className="mt-4 flex items-center text-orange-600 text-sm font-medium group-hover:text-orange-700 transition-colors">
+                  ვრცლად
+                  <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-2">
+            <Button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <Button
                 key={page}
+                onClick={() => handlePageChange(page)}
                 variant={currentPage === page ? "default" : "outline"}
-                onClick={() => setCurrentPage(page)}
-                className="w-8 h-8 sm:w-10 sm:h-10 text-sm sm:text-base rounded-full"
+                size="sm"
+                className="rounded-full min-w-[40px]"
               >
                 {page}
               </Button>
             ))}
-          </div>
 
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-3 sm:px-4 py-2 text-sm sm:text-base rounded-full"
-          >
-            <span className="hidden sm:inline">შემდეგი</span>
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
-        </div>
-      )}
-
-      {/* Blog post modal */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[95vw] max-w-[1400px] sm:w-[90vw] md:w-[80vw] lg:w-[70vw] xl:w-[70vw] 2xl:w-[60vw] max-h-[90vh] overflow-y-auto p-0">
-          {selectedPost && (
-            <>
-              {/* Full-width cover image */}
-              <div className="relative w-full h-48 sm:h-64 md:h-80">
-                <img
-                  src={selectedPost.image || "/placeholder.svg"}
-                  alt={selectedPost.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                <div className="absolute bottom-4 left-6 text-white">
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2">{selectedPost.title}</h2>
-                  <p className="text-sm opacity-90">{selectedPost.date}</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="absolute top-4 right-4 text-white text-3xl hover:text-gray-300 bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center z-20"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="p-4 sm:p-6 md:p-8">
-                <div className="prose max-w-none">
-                  <p className="text-gray-700 leading-relaxed mb-6 text-base md:text-lg">{selectedPost.text}</p>
-
-                  {selectedPost.gallery && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-                      {selectedPost.gallery.map((img: string, index: number) => (
-                        <img
-                          key={index}
-                          src={img || "/placeholder.svg"}
-                          alt={`Gallery image ${index + 1}`}
-                          className="w-full h-48 object-cover rounded-lg cursor-pointer hover:opacity-80 transition shadow-md"
-                          onClick={() => openImageModal(img, index)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Image Modal */}
-      {isImageModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[60]">
-          <div className="relative max-w-4xl max-h-full p-4">
-            <button
-              onClick={closeImageModal}
-              className="absolute top-4 right-4 text-white hover:text-orange-300 z-10 transition-colors duration-300"
+            <Button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              variant="outline"
+              size="sm"
+              className="rounded-full"
             >
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            {selectedPost?.gallery && selectedPost.gallery.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-orange-300 z-10 transition-colors duration-300"
-                >
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-orange-300 z-10 transition-colors duration-300"
-                >
-                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </>
-            )}
-            <img
-              src={selectedImage || "/placeholder.svg"}
-              alt="Enlarged image"
-              className="max-w-full max-h-full object-contain"
-            />
+              <ChevronRight className="w-4 h-4" />
+            </Button>
           </div>
-        </div>
-      )}
-    </section>
+        )}
+
+        {filteredPosts.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">ამ კატეგორიაში პოსტები არ მოიძებნა</p>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }

@@ -5,34 +5,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, ExternalLink } from "lucide-react"
+import { useSiteData } from "@/contexts/site-context"
 
 export function EducationSection() {
+  const { siteData } = useSiteData()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [visibleBooksCount, setVisibleBooksCount] = useState(5)
-
-  const teachers = [
-    {
-      name: "ანნა წილოსანი",
-      role: "ცეკვის მასწავლებელი",
-      description: "ანა არის გამოცდილი ქორეოგრაფი.",
-      photo: "/placeholder.svg?height=150&width=150&text=მასწავლებელი+1",
-    },
-    {
-      name: "გიორგი გელაშვილი",
-      role: "საკვირაო სკოლის მენტორი",
-      description: "გიორგი დიდი სიყვარულით უძღვება ბავშვებს.",
-      photo: "/placeholder.svg?height=150&width=150&text=მასწავლებელი+2",
-    },
-    {
-      name: "თამარ ბერიძე",
-      role: "საკვირაო სკოლის მასწავლებელი",
-      description: "თამარი არის საუკეთესო მასწავლებელი.",
-      photo: "/placeholder.svg?height=150&width=150&text=მასწავლებელი+3",
-    },
-  ]
 
   const learningResources = [
     { text: "ბიბლიის შესწავლა", link: "https://example.com/resource1" },
@@ -44,7 +25,7 @@ export function EducationSection() {
     { text: "საბავშვო სიმღერები", link: "https://example.com/video2" },
   ]
 
-  const galleryImages = [
+  const galleryImages = siteData.galleryImages || [
     "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+1",
     "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+2",
     "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+3",
@@ -55,7 +36,7 @@ export function EducationSection() {
     "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+8",
   ]
 
-  const allBooks = [
+  const allBooks = siteData.books || [
     {
       title: "ვეფხისტყაოსანი",
       author: "შოთა რუსთაველი",
@@ -183,7 +164,7 @@ export function EducationSection() {
 
   return (
     <section id="education" className="container mx-auto px-4 py-16">
-      <h2 className="text-3xl font-bold text-center mb-8">საგანმანათლებლო პროგრამები</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">{siteData.educationTitle}</h2>
       <div className="bg-white p-6 shadow-xl rounded-md">
         <Tabs defaultValue="school" className="w-full">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1">
@@ -246,7 +227,7 @@ export function EducationSection() {
 
           <TabsContent value="teachers" className="mt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {teachers.map((teacher, index) => (
+              {siteData.teachers.map((teacher, index) => (
                 <div key={index} className="flex flex-col items-center p-6 bg-gray-50 shadow-md rounded-md">
                   <img
                     src={teacher.photo || "/placeholder.svg"}
