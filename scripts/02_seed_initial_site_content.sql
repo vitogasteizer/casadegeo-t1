@@ -1,7 +1,7 @@
 -- Seed initial site content with current static data
 
 -- Hero section
-INSERT INTO site_content (section, title_ka, title_es, title_en, description_ka, description_es, description_en, button_text_ka, button_text_es, button_en, button_link)
+INSERT INTO site_content (section, title_ka, title_es, title_en, description_ka, description_es, description_en, button_text_ka, button_text_es, button_text_en, button_link)
 VALUES (
   'hero',
   'ქართული სახლი ვიტორია-გასტეიზში',
