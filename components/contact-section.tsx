@@ -1,10 +1,54 @@
 "use client"
 
-import { MapPin, Phone, Mail, Facebook, Instagram, Youtube } from "lucide-react"
-import { useSiteData } from "@/contexts/site-context"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { MapPin, Phone, Mail, Facebook, Instagram, Youtube } from 'lucide-react'
+
+type SiteContent = {
+  title_ka: string | null
+  description_ka: string | null
+}
+
+type ContactInfo = {
+  address: string
+  phone: string
+  email: string
+  facebook: string
+  instagram: string
+  youtube: string
+}
 
 export function ContactSection() {
-  const { siteData } = useSiteData()
+  const [content, setContent] = useState<SiteContent | null>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function loadContent() {
+      const { data, error } = await supabase
+        .from("site_content")
+        .select("title_ka, description_ka")
+        .eq("section", "contact")
+        .eq("is_active", true)
+        .single()
+
+      if (data && !error) {
+        setContent(data)
+      }
+    }
+
+    loadContent()
+  }, [])
+
+  const contactInfo: ContactInfo = {
+    address: "Vitoria-Gasteiz, Alava, Spain",
+    phone: "+34 XXX XXX XXX",
+    email: "info@casageorgiana.es",
+    facebook: "https://facebook.com",
+    instagram: "https://instagram.com",
+    youtube: "https://youtube.com",
+  }
+
+  const title = content?.title_ka || "საკონტაქტო ინფორმაცია"
 
   return (
     <section id="contact" className="bg-gray-100 py-16">
@@ -14,7 +58,7 @@ export function ContactSection() {
           <div className="flex flex-col justify-between">
             <div>
               <div className="mb-8">
-                <h2 className="text-3xl font-bold mb-8">საკონტაქტო ინფორმაცია</h2>
+                <h2 className="text-3xl font-bold mb-8">{title}</h2>
               </div>
 
               <div className="space-y-4 lg:space-y-6">
@@ -24,7 +68,7 @@ export function ContactSection() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-1">მისამართი</h4>
-                    <p className="text-gray-600">{siteData.contactInfo.address}</p>
+                    <p className="text-gray-600">{contactInfo.address}</p>
                   </div>
                 </div>
 
@@ -34,7 +78,7 @@ export function ContactSection() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-1">ტელეფონი</h4>
-                    <p className="text-gray-600">{siteData.contactInfo.phone}</p>
+                    <p className="text-gray-600">{contactInfo.phone}</p>
                   </div>
                 </div>
 
@@ -44,7 +88,7 @@ export function ContactSection() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-1">ელ. ფოსტა</h4>
-                    <p className="text-gray-600">{siteData.contactInfo.email}</p>
+                    <p className="text-gray-600">{contactInfo.email}</p>
                   </div>
                 </div>
               </div>
@@ -54,7 +98,7 @@ export function ContactSection() {
               <h4 className="font-semibold text-gray-800 mb-4">გამოგვყევით სოციალურ ქსელებში</h4>
               <div className="flex space-x-4">
                 <a
-                  href={siteData.contactInfo.facebook}
+                  href={contactInfo.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:text-orange-600 transition duration-300"
@@ -62,7 +106,7 @@ export function ContactSection() {
                   <Facebook className="w-8 h-8" />
                 </a>
                 <a
-                  href={siteData.contactInfo.instagram}
+                  href={contactInfo.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:text-orange-600 transition duration-300"
@@ -70,7 +114,7 @@ export function ContactSection() {
                   <Instagram className="w-8 h-8" />
                 </a>
                 <a
-                  href={siteData.contactInfo.youtube}
+                  href={contactInfo.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:text-orange-600 transition duration-300"

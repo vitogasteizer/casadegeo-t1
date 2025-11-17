@@ -1,19 +1,68 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { createClient } from "@/lib/supabase/client"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, ExternalLink } from "lucide-react"
-import { useSiteData } from "@/contexts/site-context"
+import { Search, ExternalLink } from 'lucide-react'
+
+type SiteContent = {
+  title_ka: string | null
+  description_ka: string | null
+}
+
+type GalleryImage = {
+  id: string
+  image_url: string
+  alt_ka: string | null
+}
 
 export function EducationSection() {
-  const { siteData } = useSiteData()
+  const [content, setContent] = useState<SiteContent | null>(null)
+  const [galleryImages, setGalleryImages] = useState<string[]>([])
+  const supabase = createClient()
+
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [visibleBooksCount, setVisibleBooksCount] = useState(5)
+
+  useEffect(() => {
+    async function loadData() {
+      // Load education section content
+      const { data: contentData } = await supabase
+        .from("site_content")
+        .select("title_ka, description_ka")
+        .eq("section", "education")
+        .eq("is_active", true)
+        .single()
+
+      if (contentData) setContent(contentData)
+
+      // Load gallery images
+      const { data: imagesData } = await supabase
+        .from("gallery_images")
+        .select("image_url")
+        .eq("is_active", true)
+        .order("display_order")
+
+      if (imagesData) {
+        setGalleryImages(imagesData.map(img => img.image_url))
+      }
+    }
+
+    loadData()
+  }, [])
+
+  const title = content?.title_ka || "განათლება"
+  const displayGalleryImages = galleryImages.length > 0 ? galleryImages : [
+    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+1",
+    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+2",
+    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+3",
+    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+4",
+  ]
 
   const learningResources = [
     { text: "ბიბლიის შესწავლა", link: "https://example.com/resource1" },
@@ -25,18 +74,22 @@ export function EducationSection() {
     { text: "საბავშვო სიმღერები", link: "https://example.com/video2" },
   ]
 
-  const galleryImages = siteData.galleryImages || [
-    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+1",
-    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+2",
-    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+3",
-    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+4",
-    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+5",
-    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+6",
-    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+7",
-    "/placeholder.svg?height=400&width=600&text=გალერეის+ფოტო+8",
+  const teachers = [
+    {
+      name: "მასწავლებელი 1",
+      role: "ქართული ენის მასწავლებელი",
+      description: "გამოცდილი პედაგოგი",
+      photo: "/placeholder.svg?height=200&width=200",
+    },
+    {
+      name: "მასწავლებელი 2",
+      role: "ცეკვის ინსტრუქტორი",
+      description: "ქართული ცეკვის სპეციალისტი",
+      photo: "/placeholder.svg?height=200&width=200",
+    },
   ]
 
-  const allBooks = siteData.books || [
+  const allBooks = [
     {
       title: "ვეფხისტყაოსანი",
       author: "შოთა რუსთაველი",
@@ -67,66 +120,6 @@ export function EducationSection() {
       description: "თანამედროვე ქართული მოთხრობა სვანეთის შესახებ.",
       cover: "/placeholder.svg?height=300&width=200&text=გოგონა+სვანი+მთიდან",
     },
-    {
-      title: "ოთარაანთ ქვრივი",
-      author: "ილია ჭავჭავაძე",
-      description: "ქართული რეალიზმის ერთ-ერთი გამორჩეული ნაწარმოები.",
-      cover: "/placeholder.svg?height=300&width=200&text=ოთარაანთ+ქვრივი",
-    },
-    {
-      title: "კაცია ადამიანი?!",
-      author: "ილია ჭავჭავაძე",
-      description: "ილია ჭავჭავაძის ცნობილი მოთხრობა.",
-      cover: "/placeholder.svg?height=300&width=200&text=კაცია+ადამიანი?!",
-    },
-    {
-      title: "მთვარის მოტაცება",
-      author: "კონსტანტინე გამსახურდია",
-      description: "რომანი, რომელიც ასახავს ქართული სოფლის ცხოვრებას.",
-      cover: "/placeholder.svg?height=300&width=200&text=მთვარის+მოტაცება",
-    },
-    {
-      title: "ქეთო და კოტე",
-      author: "ლევან გოთუა",
-      description: "პოპულარული ქართული კომედია.",
-      cover: "/placeholder.svg?height=300&width=200&text=ქეთო+და+კოტე",
-    },
-    {
-      title: "დათა თუთაშხია",
-      author: "ჭაბუა ამირეჯიბი",
-      description: "ეპიკური რომანი ქართველი ყაჩაღის ცხოვრებაზე.",
-      cover: "/placeholder.svg?height=300&width=200&text=დათა+თუთაშხია",
-    },
-    {
-      title: "ალუბლის ყვავილობა",
-      author: "ვაჟა-ფშაველა",
-      description: "ქართული პოეზიის შედევრი.",
-      cover: "/placeholder.svg?height=300&width=200&text=ალუბლის+ყვავილობა",
-    },
-    {
-      title: "ბაში-აჩუკი",
-      author: "ვაჟა-ფშაველა",
-      description: "ეპიკური პოემა მთიელთა ცხოვრებაზე.",
-      cover: "/placeholder.svg?height=300&width=200&text=ბაში-აჩუკი",
-    },
-    {
-      title: "ნატვრის ხე",
-      author: "ნოდარ დუმბაძე",
-      description: "თანამედროვე ქართული პროზის შედევრი.",
-      cover: "/placeholder.svg?height=300&width=200&text=ნატვრის+ხე",
-    },
-    {
-      title: "მე, ბებია, ილიკო და ილარიონი",
-      author: "ნოდარ დუმბაძე",
-      description: "ავტობიოგრაფიული რომანი.",
-      cover: "/placeholder.svg?height=300&width=200&text=მე+ბებია+ილიკო",
-    },
-    {
-      title: "თეთრი ღამე",
-      author: "ზურაბ ქარუმიძე",
-      description: "თანამედროვე ქართული ლიტერატურა.",
-      cover: "/placeholder.svg?height=300&width=200&text=თეთრი+ღამე",
-    },
   ]
 
   const openGalleryModal = (imageSrc: string, index: number) => {
@@ -141,15 +134,15 @@ export function EducationSection() {
   }
 
   const nextImage = () => {
-    const nextIndex = (currentImageIndex + 1) % galleryImages.length
+    const nextIndex = (currentImageIndex + 1) % displayGalleryImages.length
     setCurrentImageIndex(nextIndex)
-    setSelectedImage(galleryImages[nextIndex])
+    setSelectedImage(displayGalleryImages[nextIndex])
   }
 
   const prevImage = () => {
-    const prevIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length
+    const prevIndex = (currentImageIndex - 1 + displayGalleryImages.length) % displayGalleryImages.length
     setCurrentImageIndex(prevIndex)
-    setSelectedImage(galleryImages[prevIndex])
+    setSelectedImage(displayGalleryImages[prevIndex])
   }
 
   const loadMoreBooks = () => {
@@ -164,7 +157,7 @@ export function EducationSection() {
 
   return (
     <section id="education" className="container mx-auto px-4 py-16">
-      <h2 className="text-3xl font-bold text-center mb-8">{siteData.educationTitle}</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">{title}</h2>
       <div className="bg-white p-6 shadow-xl rounded-md">
         <Tabs defaultValue="school" className="w-full">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1">
@@ -227,7 +220,7 @@ export function EducationSection() {
 
           <TabsContent value="teachers" className="mt-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {siteData.teachers.map((teacher, index) => (
+              {teachers.map((teacher, index) => (
                 <div key={index} className="flex flex-col items-center p-6 bg-gray-50 shadow-md rounded-md">
                   <img
                     src={teacher.photo || "/placeholder.svg"}
@@ -291,7 +284,7 @@ export function EducationSection() {
 
           <TabsContent value="gallery" className="mt-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {galleryImages.map((image, index) => (
+              {displayGalleryImages.map((image, index) => (
                 <img
                   key={index}
                   src={image || "/placeholder.svg"}

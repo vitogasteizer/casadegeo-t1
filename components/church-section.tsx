@@ -1,16 +1,51 @@
 "use client"
 
-import { Church, Phone } from "lucide-react"
-import { useSiteData } from "@/contexts/site-context"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+import { Church, Phone } from 'lucide-react'
+
+type SiteContent = {
+  title_ka: string | null
+  description_ka: string | null
+}
 
 export function ChurchSection() {
-  const { siteData } = useSiteData()
+  const [content, setContent] = useState<SiteContent | null>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function loadContent() {
+      const { data, error } = await supabase
+        .from("site_content")
+        .select("title_ka, description_ka")
+        .eq("section", "church")
+        .eq("is_active", true)
+        .single()
+
+      if (data && !error) {
+        setContent(data)
+      }
+    }
+
+    loadContent()
+  }, [])
+
+  const title = content?.title_ka || "ეკლესია"
+  const description =
+    content?.description_ka ||
+    "ჩვენი ეკლესია არის სულიერი ცენტრი, სადაც ქართველები შეუძლიათ შეუერთდნენ ლოცვას და რწმენის გაზიარებას."
+
+  const holidays = [
+    { day: "7", text: "წმინდა იოანე ნათლისმცემელი" },
+    { day: "12", text: "წმინდა პეტრე და პავლე" },
+    { day: "28", text: "მოციქულთა დღე" },
+  ]
 
   return (
     <section id="church" className="bg-yellow-50 py-16">
       <div className="container mx-auto px-4 mb-10">
-        <h2 className="text-3xl font-bold text-center mb-8">{siteData.churchTitle}</h2>
-        <p className="text-center text-gray-700 max-w-3xl mx-auto leading-relaxed">{siteData.churchDescription}</p>
+        <h2 className="text-3xl font-bold text-center mb-8">{title}</h2>
+        <p className="text-center text-gray-700 max-w-3xl mx-auto leading-relaxed">{description}</p>
       </div>
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -19,7 +54,7 @@ export function ChurchSection() {
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">მიმდინარე თვის დღესასწაულები</h3>
                 <ul className="space-y-2 text-gray-600">
-                  {siteData.holidays.map((holiday, index) => (
+                  {holidays.map((holiday, index) => (
                     <li key={index} className="p-2 rounded-lg bg-gray-50 flex justify-between items-center">
                       <span>
                         {holiday.day} - {holiday.text}
