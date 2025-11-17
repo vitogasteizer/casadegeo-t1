@@ -4,13 +4,19 @@ import { useState, useEffect } from "react"
 import { useSiteData } from "@/contexts/site-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
-import { useSearchParams } from "next/navigation"
+import { X, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 
 export function BlogPosts() {
   const { siteData } = useSiteData()
-  const searchParams = useSearchParams()
-  const postId = searchParams.get("postId")
+  let postIdParam: string | null = null
+  try {
+    const searchParams = useSearchParams()
+    postIdParam = searchParams.get("postId")
+  } catch (e) {
+    // During SSR, useSearchParams might not be available
+    postIdParam = null
+  }
 
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [currentPage, setCurrentPage] = useState(1)
@@ -22,13 +28,13 @@ export function BlogPosts() {
   const postsPerPage = 6
 
   useEffect(() => {
-    if (postId) {
-      const post = siteData.blogPosts.find((p) => p.id === Number.parseInt(postId))
+    if (postIdParam) {
+      const post = siteData.blogPosts.find((p) => p.id === Number.parseInt(postIdParam))
       if (post) {
         setSelectedPost(post)
       }
     }
-  }, [postId, siteData.blogPosts])
+  }, [postIdParam, siteData.blogPosts])
 
   const filteredPosts = siteData.blogPosts.filter((post) =>
     selectedCategory === "all" ? true : post.category === selectedCategory,
